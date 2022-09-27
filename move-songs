@@ -47,12 +47,12 @@ def parse_args():
     parser.add_argument(
         "-s", "--song", action="store_true", help="add each song to its own folder"
     )
-    parser.add_argument(
-        "-r",
-        "--recursive",
-        action="store_true",
-        help="recursively look for songs in the starting dir",
-    )
+    # parser.add_argument(
+    #     "-r",
+    #     "--recursive",
+    #     action="store_true",
+    #     help="recursively look for songs in the starting dir",
+    # )
     parser.add_argument(
         "-t", "--target-dir", help="Directory where the files will be sorted"
     )
@@ -69,7 +69,7 @@ def parse_args():
     album = args.album
     song = args.song
 
-    recursive = args.recursive
+    # recursive = args.recursive
 
     return starting_dir, target_dir, year, album, song
 
