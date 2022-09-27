@@ -1,0 +1,101 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+import argparse
+
+from mutagen.flac import FLAC
+
+
+def get_metadata(file, type):
+    metadata = FLAC(file)[type]
+    return metadata[0]
+
+
+class Sorter:
+    def __init__(self, type, next_sorter=None):
+        self.type = type
+        self.next_sorter = next_sorter
+
+    def sort_file(self, starting_path, file, target_dir):
+        metadata = get_metadata(os.path.join(starting_path, file), self.type)
+        if not os.path.isdir(os.path.join(target_dir, metadata)):
+            os.mkdir(os.path.join(target_dir, metadata))
+        if self.next_sorter:
+            self.next_sorter.sort_file(
+                starting_path, file, os.path.join(target_dir, metadata)
+            )
+        else:
+            print(metadata)
+            os.rename(
+                os.path.join(starting_path, file),
+                os.path.join(target_dir, metadata, file),
+            )
+
+
+def parse_args():
+
+    parser = argparse.ArgumentParser(description="Sort music files by metadata")
+    parser.add_argument(
+        "starting_dir",
+        metavar="start-dir",
+        type=str,
+        help="Directory of the unsorted music files",
+    )
+    parser.add_argument("-y", "--year", action="store_true", help="sort by year")
+    parser.add_argument("-a", "--album", action="store_true", help="sort by album")
+    parser.add_argument(
+        "-s", "--song", action="store_true", help="add each song to its own folder"
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="recursively look for songs in the starting dir",
+    )
+    parser.add_argument(
+        "-t", "--target-dir", help="Directory where the files will be sorted"
+    )
+
+    args = parser.parse_args()
+
+    starting_dir = args.starting_dir
+
+    target_dir = args.target_dir
+    if not target_dir:
+        target_dir = starting_dir
+
+    year = args.year
+    album = args.album
+    song = args.song
+
+    recursive = args.recursive
+
+    return starting_dir, target_dir, year, album, song
+
+
+def main():
+    starting_dir, target_dir, year, album, song = parse_args()
+
+    first_sorter = Sorter("ARTIST")
+    current_sorter = first_sorter
+
+    if year:
+        current_sorter.next_sorter = Sorter("YEAR")
+        current_sorter = current_sorter.next_sorter
+    if album:
+        current_sorter.next_sorter = Sorter("ALBUM")
+        current_sorter = current_sorter.next_sorter
+    if song:
+        current_sorter.next_sorter = Sorter("SONG")
+
+    for file in os.listdir(starting_dir):
+        if not (
+            file.endswith(".flac") or file.endswith(".mp3") or file.endswith(".m4a")
+        ):
+            continue
+        first_sorter.sort_file(starting_dir, file, target_dir)
+
+
+if __name__ == "__main__":
+    main()
