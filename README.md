@@ -58,8 +58,8 @@ ffprobe [path to file]
 
 ## TODO
 
+- recursively search for songs in the starting dir
 - fix any bugs that may appear
-- support relative path
 - more sorting options (maybe genre)  
 
 ### Forks and merges are welcome
