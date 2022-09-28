@@ -31,7 +31,6 @@ options:
                         Directory where the files will be
                         sorted
 ```
-All directories must be in full path (ex. ~/media/music not media/music). I know it's possible to use relative paths, I just couldn't figure out how.
 
 Songs are always sorted by artist and (optionally) by Year, Album, Song in that order.  
 If the user doesn't provide a target directory where the files will be moved and sorted, they will be sorted inside the starting directory
@@ -59,7 +58,6 @@ ffprobe [path to file]
 
 ## TODO
 
-- recursively search for songs in the starting dir
 - fix any bugs that may appear
 - support relative path
 - more sorting options (maybe genre)  
