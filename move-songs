@@ -10,21 +10,27 @@ from mutagen.mp3 import MP3
 from mutagen.m4a import M4A
 
 
-def get_metadata(file, type, file_type):
-    if file_type == "flac":
-        metadata = FLAC(file)[type]
-    elif file_type == "mp3":
-        metadata = MP3(file)[type]
-    elif file_type == "m4a":
-        metadata = M4A(file)[type]
+def get_metadata(file, metadata_type, file_type):
+    if file_type == ".flac":
+        parsed_file = FLAC(file)
+    elif file_type == ".mp3":
+        parsed_file = MP3(file)
+    elif file_type == ".m4a":
+        parsed_file = M4A(file)
     else:
-        raise AssertionError("Unrecognized Extension for metadata. Something went horribly wrong!")
+        raise AssertionError(f"Unrecognized Extension for metadata {file_type}. Something went horribly wrong!")
+    
+    metadata = parsed_file[metadata_type]
+    if len(metadata) > 1:
+        parsed_file[metadata_type] = metadata[0]
+        parsed_file.save()
+
     return metadata[0]
 
 
 class Sorter:
-    def __init__(self, type, next_sorter=None):
-        self.type = type
+    def __init__(self, metadata_type, next_sorter=None):
+        self.type = metadata_type
         self.next_sorter = next_sorter
 
     def sort_file(self, starting_path, file, target_dir):
@@ -36,7 +42,8 @@ class Sorter:
                 starting_path, file, os.path.join(target_dir, metadata)
             )
         else:
-            print(metadata)
+            song_name = get_metadata(os.path.join(starting_path, file), "TITLE", os.path.splitext(file)[1])
+            # print(song_name)
             shutil.move(
                 os.path.join(starting_path, file),
                 os.path.join(target_dir, metadata, file),
