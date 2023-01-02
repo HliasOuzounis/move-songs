@@ -6,10 +6,19 @@ import shutil
 import argparse
 
 from mutagen.flac import FLAC
+from mutagen.mp3 import MP3
+from mutagen.m4a import M4A
 
 
-def get_metadata(file, type):
-    metadata = FLAC(file)[type]
+def get_metadata(file, type, file_type):
+    if file_type == "flac":
+        metadata = FLAC(file)[type]
+    elif file_type == "mp3":
+        metadata = MP3(file)[type]
+    elif file_type == "m4a":
+        metadata = M4A(file)[type]
+    else:
+        raise AssertionError("Unrecognized Extension for metadata. Something went horribly wrong!")
     return metadata[0]
 
 
@@ -19,7 +28,7 @@ class Sorter:
         self.next_sorter = next_sorter
 
     def sort_file(self, starting_path, file, target_dir):
-        metadata = get_metadata(os.path.join(starting_path, file), self.type)
+        metadata = get_metadata(os.path.join(starting_path, file), self.type, os.path.splitext(file)[1])
         if not os.path.isdir(os.path.join(target_dir, metadata)):
             os.mkdir(os.path.join(target_dir, metadata))
         if self.next_sorter:
@@ -48,12 +57,6 @@ def parse_args():
     parser.add_argument(
         "-s", "--song", action="store_true", help="add each song to its own folder"
     )
-    # parser.add_argument(
-    #     "-r",
-    #     "--recursive",
-    #     action="store_true",
-    #     help="recursively look for songs in the starting dir",
-    # )
     parser.add_argument(
         "-t", "--target-dir", help="Directory where the files will be sorted"
     )
@@ -69,8 +72,6 @@ def parse_args():
     year = args.year
     album = args.album
     song = args.song
-
-    # recursive = args.recursive
 
     return starting_dir, target_dir, year, album, song
 
