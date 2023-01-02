@@ -58,7 +58,6 @@ ffprobe [path to file]
 
 ## TODO
 
-- recursively search for songs in the starting dir
 - fix any bugs that may appear
 - more sorting options (maybe genre)  
 

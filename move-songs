@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import argparse
 
 from mutagen.flac import FLAC
@@ -27,7 +28,7 @@ class Sorter:
             )
         else:
             print(metadata)
-            os.rename(
+            shutil.move(
                 os.path.join(starting_path, file),
                 os.path.join(target_dir, metadata, file),
             )
@@ -89,12 +90,13 @@ def main():
     if song:
         current_sorter.next_sorter = Sorter("SONG")
 
-    for file in os.listdir(starting_dir):
-        if not (
-            file.endswith(".flac") or file.endswith(".mp3") or file.endswith(".m4a")
-        ):
-            continue
-        first_sorter.sort_file(starting_dir, file, target_dir)
+    for (root, dirs, files) in os.walk(starting_dir):
+        for file in files:
+            if not (
+                file.endswith(".flac") or file.endswith(".mp3") or file.endswith(".m4a")
+            ):
+                continue
+            first_sorter.sort_file(root, file, target_dir)
 
 
 if __name__ == "__main__":
