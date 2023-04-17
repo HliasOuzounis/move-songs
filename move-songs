@@ -24,6 +24,7 @@ def get_metadata(file, metadata_type, file_type):
     if not metadata[0].strip():
         print(f"No {metadata_type} metadata for {file.split('/')[-1]}")
         metadata = [input("Enter metadata yourself:\n")]
+        print(metadata)
         parsed_file[metadata_type] = metadata[0]
         parsed_file.save()
    
